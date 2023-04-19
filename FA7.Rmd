@@ -1,0 +1,212 @@
+---
+title: "FA-7 | APM1110"
+author: "LEIANA MARI D. AQUINO"
+date: "2023-04-19"
+output: 
+  html_notebook
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+EXERCISES 5.1
+Use R to solve the following.
+
+## The Memory Stick
+
+A machine produces memory sticks of varying lengths, distributed uniformly between 2 and 12 mm. Memory sticks longer than 10 mm do not meet the design criterion, and must be scrapped.
+
+(a) Calculate the probability that a memory stick will be scrapped.
+```
+Let X denote the length of the memory sticks. It follows a uniform distribution of (2, 12). 
+```
+The pdf of a uniform distribution is given by
+
+$$
+\begin{equation}
+f(x) = 
+\begin{cases} 
+\ \frac{1}{12-2}, &  2 \le x \le 12 \\
+0,         & \text{otherwise }
+\end{cases}
+\end{equation}
+$$
+```
+If the memory sticks longer than 10mm will be scrapped.
+```
+We will have $P(x > 10)$. Now, for $2 \le a \le 12$,
+$$
+P(x>a)=\int_a^{12} f(x) =\int_a^{12} \frac{1}{10}dx=\frac{1}{10}[x]_a^{12}
+$$
+Putting $a=10$,
+$$
+P(x>10)=\frac{12-10}{10}=\frac{2}{10}=0.2
+$$
+```
+The probability that a memory stick will be scrapped is 0.2
+```
+Using R,
+```{r, echo=FALSE}
+curve(dunif(x, 2, 12), xlim = c(0, 10))
+curve(punif(x, 2, 12), xlim = c(0, 10))
+```
+
+(b) Simulate 50 memory stick lengths and obtain a histogram of the simulated values. Calculate the simulated mean and variance.
+
+To simulate 50 memory sticks, write `x = runif(50, 2, 12)`.
+
+Then, we can use the round function to convert the decimal values into 0s or 1s. `round(x, 2)`
+
+To see what they are, we have
+```{r, echo=FALSE}
+ x = runif(50, 2, 12)
+ round(x, 2)
+```
+
+To obtain the empirical mean, write `mean(x)`
+```{r, echo=FALSE}
+mean(x);
+```
+
+and variance, write `var(x)`
+```{r, echo=FALSE}
+var(x);
+```
+
+Its histogram, write `hist(x)`
+```{r, echo=FALSE}
+  hist(x)  # frequency histogram
+  rug(x)   # small tick marks show location of each simulated value
+```
+
+## Electronic engineering laboratory
+Students in an electronic engineering laboratory measure current in using an ammeter. Due to several random factors, the measurement X follows the pdf $f(x)=0.025x + b, 2 < x <6$
+
+(a) Show that, for this to be a genuine probability density, $b = 0.15$.
+Since f(x) is pdf so following must be true, we'll have this equation (1):
+$$
+\int_2^{6} f(x)dx =1
+$$
+Now, the equation (2)
+$$
+\int_2^{6} [0.025x + b]dx = [\frac{0.025x^2}{2}+bx]_2^6=0.4 + 4b
+$$
+Equating equation (1) and (2), we have
+$$
+0.4 + 4b = 1\\
+4b=0.6 \\
+b=0.15
+$$
+Now, we solve it using R with this code:
+```
+lower = 2
+upper = 6
+b <- 0.15
+f <- function(x) ifelse(6 > x & x > 2, 0.025*x + b, 0)
+pdf <- integrate(f, lower = 2, upper = 6)$val
+y <- 0.1
+gp <- (abs(PDensity - 1) < y) 
+gp
+```
+We'll have `TRUE` to denote that b = 0.15 is a genuine probability
+```{r, echo=FALSE}
+lower = 2
+upper = 6
+b <- 0.15
+f <- function(x) ifelse(6 > x & x > 2, 0.025*x + b, 0)
+pdf <- integrate(f, lower = 2, upper = 6)$val
+y <- 0.1
+gp <- (abs(pdf - 1) < y) 
+gp
+```
+
+
+(b) Find the probability that the measurement of the current exceeds 3.
+$$
+P(X>3)= \int_3^6 [0.025x + 0.15]dx=[\frac{0.025x^2}{2}+0.15x]_3^6=0.7875
+$$
+Now, we solve it using R with this code: `e_3 <- integrate(f, lower = 3, upper = 6)$val`
+```{r, echo=FALSE}
+lower = 2
+upper = 6
+
+e_3 <- integrate(f, lower = 3, upper = 6)$val
+cat("Probability that measurement exceeds 3 is =", e_3)
+```
+
+
+(c) Find $E(X)$
+$$
+E(X)=\int_2^6[0.025x + 0.15]dx=[\frac{0.025x^3}{2}+\frac{0.15x^2}{2}]_3^6=4.133
+$$
+
+Now, we solve it using R with this code: `eX <- integrate(function(x) x * f(x), lower = 2, upper = 6)$val`
+
+```{r, echo=FALSE}
+lower = 2
+upper = 6
+
+eX <- integrate(function(x) x * f(x), lower = 2, upper =6)$val
+cat("Expected value of X =", round(eX, 2))
+```
+
+
+## Radio Communications System
+
+In a radio communications system, the phase difference X between the transmitter and receiver is modeled as having a uniform density in $[-\pi,\pi]$. Find $P(X \le0)$ and $P(X \le \pi/2)$.
+
+The pdf of a uniform distribution is given by
+
+$$
+\begin{equation}
+f(\theta) = 
+\begin{cases} 
+\ \frac{1}{2\pi}, &  -\pi \le \theta \le \pi \\
+0,         & \text{otherwise }
+\end{cases}
+\end{equation}
+$$
+
+```{r, echo=FALSE}
+lower = 0
+upper = 3.14/2
+
+lowerInterval <- c(-3.14)
+upperInterval <- c(3.14)
+
+pdf <- function(x) {
+  ifelse(abs(x) <= 3.14, 1/(2*3.14), 0)
+}
+```
+
+Hence, $P(X \le 0)$:
+```{r, echo=FALSE}
+probability_1 <- integrate(pdf, lower = lowerInterval, upper = 0)$val
+probability_1
+```
+
+For $P(X \le \pi/2)$:
+```{r, echo=FALSE}
+probability_2 <- integrate(pdf, lower = lowerInterval, upper = 3.14/2)$val
+probability_2
+```
+
+The code for these are:
+```
+lower = 0
+upper = 3.14/2
+
+lowerInterval <- c(-3.14)
+upperInterval <- c(3.14)
+
+pdf <- function(x) {
+  ifelse(abs(x) <= 3.14, 1/(2*3.14), 0)
+}
+probability_1 <- integrate(pdf, lower = lowerInterval, upper = 0)$val
+probability_1
+
+probability_2 <- integrate(pdf, lower = lowerInterval, upper = 3.14/2)$val
+probability_2
+```
